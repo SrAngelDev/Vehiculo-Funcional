@@ -1,4 +1,4 @@
-package srangeldev.models
+package models
 
 import java.time.LocalDateTime
 

@@ -1,12 +1,6 @@
-package srangeldev.factories
+package factories
 
-import srangeldev.models.CocheElectricoImpl
-import srangeldev.models.CocheGasolinaImpl
-import srangeldev.models.CocheHibridoImpl
-import srangeldev.models.MotocicletaImpl
-import srangeldev.models.Vehiculo
-
-import kotlin.random.Random
+import models.*
 
 class VehiculoFactory {
     companion object {

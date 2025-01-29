@@ -1,11 +1,12 @@
-package srangeldev
 
-import srangeldev.models.*
-import srangeldev.views.*
-import srangeldev.factories.*
-import srangeldev.extensions.*
-import srangeldev.repositories.*
+import com.github.ajalt.mordant.rendering.TextColors
+import models.*
+import factories.*
+import extensions.*
+import repositories.*
 import java.time.LocalDateTime
+
+typealias color = TextColors
 
 fun main() {
     val vehiculoFactory = VehiculoFactory

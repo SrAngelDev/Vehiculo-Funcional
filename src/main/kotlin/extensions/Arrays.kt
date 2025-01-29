@@ -1,6 +1,6 @@
-package srangeldev.extensions
+package extensions
 
-import srangeldev.models.Vehiculo
+import models.Vehiculo
 
 
 inline fun <T> Array<T?>.countBy(predicate: (T) -> Boolean = { true }): Int {

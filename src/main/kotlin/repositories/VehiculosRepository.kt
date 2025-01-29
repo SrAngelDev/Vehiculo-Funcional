@@ -1,8 +1,7 @@
-package srangeldev.repositories
+package repositories
 
-import srangeldev.extensions.ModoOrdenamiento
-import srangeldev.models.Vehiculo
-import javax.sql.rowset.Predicate
+import extensions.ModoOrdenamiento
+import models.Vehiculo
 
 interface VehiculosRepository : CrudRepository<Vehiculo, Int> {
     fun filterBy(predicate: (Vehiculo) -> Boolean = { true }): Array<Vehiculo>

@@ -1,18 +1,11 @@
-package srangeldev.repositories
+package repositories
 
 import org.lighthousegames.logging.logging
-import srangeldev.extensions.ModoOrdenamiento
-import srangeldev.extensions.ModoRedimension
-import srangeldev.extensions.countBy
-import srangeldev.extensions.filterBy
-import srangeldev.extensions.firstOrNull
-import srangeldev.extensions.indexOf
-import srangeldev.extensions.maxByOrNull
-import srangeldev.extensions.minByOrNull
-import srangeldev.extensions.redimensionar
-import srangeldev.extensions.sortedBy
-import srangeldev.models.Vehiculo
+import extensions.*
+import models.Vehiculo
 import java.time.LocalDateTime
+import kotlin.compareTo
+import kotlin.text.set
 
 class VehiculosRepositoryImpl: VehiculosRepository {
     private val logger = logging()
@@ -30,9 +23,9 @@ class VehiculosRepositoryImpl: VehiculosRepository {
         return vehiculos.filterBy(predicate)
     }
 
-    override fun averageBy(predicate: (Vehiculo) -> Boolean): Double {
-        logger.debug { "Calculando el consumo medio" }
-        return averageBy(predicate)
+    override fun averageBy(selector: (Vehiculo) -> Int, predicate: (Vehiculo) -> Boolean): Int {
+        logger.debug { "Calculando la media" }
+        return vehiculos.averageBy(selector, predicate)
     }
 
     override fun countBy(predicate: (Vehiculo) -> Boolean): Int {
@@ -50,7 +43,7 @@ class VehiculosRepositoryImpl: VehiculosRepository {
         return vehiculos.minByOrNull(selector, predicate)
     }
 
-    override fun sortedBy(mode: ModoOrdenamiento, condition: (Vehiculo) -> Double): Array<Vehiculo> {
+    override fun sortedBy(mode: ModoOrdenamiento, condition: (Vehiculo) -> Int): Array<Vehiculo> {
         logger.debug { "Ordenando vehiculos" }
         return vehiculos.sortedBy(mode, condition)
     }
@@ -67,15 +60,10 @@ class VehiculosRepositoryImpl: VehiculosRepository {
 
     override fun create(item: Vehiculo): Vehiculo {
         logger.debug { "Crear vehiculo" }
-        val nuevoVehiculo = item.copy(
-            id = generateId(),
-            marca = item.marca,
-            matricula = item.matricula,
-            kilometros = item.kilometros,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-            isDeleted = item.isDeleted,
-        )
+        val nuevoVehiculo = item.copy()
+        nuevoVehiculo.id = generateId()
+        nuevoVehiculo.createdAt = LocalDateTime.now()
+        nuevoVehiculo.updatedAt = LocalDateTime.now()
 
         var pos = vehiculos.indexOf { it == null }
         if (pos != -1) {
@@ -93,15 +81,9 @@ class VehiculosRepositoryImpl: VehiculosRepository {
     override fun update(id: Int, item: Vehiculo): Vehiculo? {
         logger.info { "Actualizando vehiculo" }
         return this.findById(id)?.let {
-            val nuevoVehiculo = it.copy(
-                id = item.id,
-                marca = item.marca,
-                matricula = item.matricula,
-                kilometros = item.kilometros,
-                createdAt = item.createdAt,
-                updatedAt = LocalDateTime.now(),
-                isDeleted = item.isDeleted,
-            )
+            val nuevoVehiculo = it.copy()
+            nuevoVehiculo.id = generateId()
+            nuevoVehiculo.updatedAt = LocalDateTime.now()
             val index = vehiculos.indexOfFirst { vehiculo -> vehiculo?.id == id }
             if (index >= 0) {
                 vehiculos[index] = nuevoVehiculo
@@ -117,15 +99,7 @@ class VehiculosRepositoryImpl: VehiculosRepository {
             if (index >= 0) {
                 vehiculos[index] = null
             }
-            vehiculo.copy(
-                id = vehiculo.id,
-                marca = vehiculo.marca,
-                matricula = vehiculo.matricula,
-                kilometros = vehiculo.kilometros,
-                createdAt = vehiculo.createdAt,
-                updatedAt = LocalDateTime.now(),
-                isDeleted = true
-            ).also {
+            vehiculo.copy().also {
                 redimensionarSiHaceFalta()
                 logger.info { "Vehiculo borrado correctamente" }
             }
@@ -143,7 +117,7 @@ class VehiculosRepositoryImpl: VehiculosRepository {
     }
 
     private fun redimensionar(modo: ModoRedimension = ModoRedimension.AUMENTAR) {
-        logger.debug { "Redimensionando el array de estudiantes modo: ${modo.name}" }
+        logger.debug { "Redimensionando el array de vehiculos modo: ${modo.name}" }
         if (modo == ModoRedimension.DISMINUIR) {
             maxVehiculos /= 2
             vehiculos = vehiculos.redimensionar(ModoRedimension.DISMINUIR, maxVehiculos)

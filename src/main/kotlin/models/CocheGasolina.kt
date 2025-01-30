@@ -1,4 +1,4 @@
-package srangeldev.models
+package models
 
 interface CocheGasolina {
     fun consumo()

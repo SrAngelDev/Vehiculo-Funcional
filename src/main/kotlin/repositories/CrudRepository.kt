@@ -1,4 +1,4 @@
-package srangeldev.repositories
+package repositories
 
 interface CrudRepository<T, ID> {
     fun findAll(): Array<T>
